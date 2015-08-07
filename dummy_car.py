@@ -19,7 +19,7 @@ def get_poss():
     for line in lines:
         x,y = line.strip().split()
         sp  = ct.gauss_negative(float(y)+delta_y,float(x)+delta_x,ll)
-        yield sp.to_DFM()
+        yield [x,y]
 
 if __name__ == "__main__":
     for pos in get_poss():

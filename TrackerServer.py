@@ -3,7 +3,13 @@ from tornado import websocket, web, ioloop, httpserver
 import socket
 import json
 import udpserver
+import math
+from CoordinateTransform import CoordinateTransform
 
+ct = CoordinateTransform("54")
+ll = 117 * math.pi / 180
+delta_x = 513804.041 - 513269.1590
+delta_y = 3788034.879 - 3788170.2160
 clients = []
 cars = {}
 
@@ -51,7 +57,10 @@ class CollectServer(udpserver.UDPServer):
         print data
         try:
             version, name, X, Y, ORI, V, ACC, T = data.split(',')
-            cars[name] = [float(X), float(Y)]
+            x = float(X)+delta_x
+            y = float(Y)+delta_y
+            cars[name] =  ct.gauss_negative(y,x,ll).to_DFM()
+            print cars[name]
         except Exception as e:
             print e
         bc_clients()
