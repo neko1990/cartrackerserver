@@ -14,21 +14,16 @@ clients = []
 cars = {}
 
 
-def render_cars():
-    msg = json.dumps([{"name": name, "pos": [cars[name][0], cars[name][1]]} for name in cars])
-    return msg
-
-
 def bc_clients():
+    msg = json.dumps([{"name": name, "pos": [cars[name][0], cars[name][1]]} for name in cars])
     for client in clients:
-        client.write_message(render_cars())
+        client.write_message(msg)
 
 
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
         print 'new connection'
         clients.append(self)
-        self.write_message(render_cars())
 
     def on_message(self, message):
         print 'message received:  %s' % message
@@ -63,7 +58,6 @@ class CollectServer(udpserver.UDPServer):
             print cars[name]
         except Exception as e:
             print e
-        bc_clients()
 
 
 if __name__ == "__main__":
@@ -71,8 +65,11 @@ if __name__ == "__main__":
     http_server = httpserver.HTTPServer(app)
     http_server.listen(8886, '0.0.0.0')
 
+    sched = ioloop.PeriodicCallback(bc_clients, 1000) # 1s
+    sched.start()
+
     collect_server = CollectServer()
     collect_server.bind(8887, '0.0.0.0')
-
     collect_server.start()
+
     io_loop.start()
