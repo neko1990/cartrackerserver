@@ -47,3 +47,8 @@ class PositionPoint:
         x = self.x + 534.882
         y = self.y + -135.337
         return self.ct54.gauss_negative(y,x,self.ll)
+
+    def export_google(self):
+        if self.lng is None:
+            self.xy2lnglat()
+        return [self.lng,self.lat]
