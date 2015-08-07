@@ -87,7 +87,7 @@ def add_accept_handler(sock, callback, io_loop=None):
     def accept_handler(fd, events):
         while True:
             try:
-                data, address = sock.recvfrom(512)
+                data, address = sock.recvfrom(1400)
             except socket.error as e:
                 if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
                     return

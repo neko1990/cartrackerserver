@@ -3,8 +3,7 @@ from tornado import websocket, web, ioloop, httpserver
 import socket
 import json
 import udpserver
-import math
-from CoordinateTransform import CoordinateTransform
+from PositionPoint import PositionPoint
 
 clients = []
 cars = {}
@@ -42,30 +41,24 @@ app = web.Application([
     (r"/ws", WSHandler),
 ])
 
-ct = CoordinateTransform("54")
-ll = 117 * math.pi / 180
-delta_x = 513804.041 - 513269.1590
-delta_y = 3788034.879 - 3788170.2160
 
 class CollectServer(udpserver.UDPServer):
-
-    @staticmethod
-    def handle_datagram(data, address):
+    def handle_datagram(self,data, address):
         try:
             pts = data.split(",")
             version = pts[0]
             if version == "V1":
                 name = pts[1]
-                X = pts[2]
-                Y = pts[3]
-                x = float(X)+delta_x
-                y = float(Y)+delta_y
-                cars[name] =  ct.gauss_negative(y,x,ll).to_DFM()
+                X = float(pts[2])
+                Y = float(pts[3])
+                res = PositionPoint().set_xy(X,Y).export_amap()
+                cars[name] =  res
             elif version == "V2":
                 name = pts[1]
-                Lng = pts[2]
-                Lat = pts[3]
-                cars[name] = [float(Lng),float(Lat)]
+                Lng = float(pts[2])
+                Lat = float(pts[3])
+                res = PositionPoint().set_lnglat(Lng,Lat).export_amap()
+                cars[name] = res
         except Exception as e:
             print "error",e,data
 

@@ -1,22 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
 import math
-class StationPoint:
-    def __init__(self,x,y):
-        self.x = x
-        self.y = y
-
-    def to_DFM(self):
-        x = str(self.x)
-        xdd = int(x[0:3])
-        xmm = int(x[3:5])
-        xss = float(x[5:])
-        xx = xdd+xmm/60.0+xss/3600.0;
-        y = str(self.y)
-        ydd = int(y[0:2])
-        ymm = int(y[2:4])
-        yss = float(y[4:])
-        yy = ydd+ymm/60.0+yss/3600.0;
-        return [xx,yy]
 
 class CoordinateTransform:
     def __init__(self,e):
@@ -61,7 +45,7 @@ class CoordinateTransform:
         xx = X + N * t * ((0.5 + (1.0 / 24.0 * (5 - t * t + 9 * h2 + 4 * h2 * h2) + 1.0 / 720.0 * (61 - 58 * t * t + (t ** 4)) * m * m) * m * m) * m * m);
         yy = N * ((1 + (1.0 / 6.0 * (1 - t * t + h2) + 1.0 / 120.0 * (5 - 18 * t * t + (t ** 4) + 14 * h2 - 58 * h2 * t * t) * m * m) * m * m) * m);
         yy = yy + 500000;
-        return StationPoint(yy,xx)
+        return [yy,xx]
 
     def gauss_negative(self, x, y ,L0):
         e2 = self .e2
@@ -104,35 +88,7 @@ class CoordinateTransform:
         Nf = a / math.sqrt(1 - e2 * math.sin(Bf) * math.sin(Bf));
         BB = (Bf - 0.5 * Vf * Vf * tf * ((y / Nf) ** 2) - 1.0 / 12 * (5 + 3 * tf * tf + hf2 - 9 * hf2 * tf * tf) * ((y / Nf) ** 4) + 1.0 / 360 * (61 + 90 * tf * tf + 45 * tf * tf) * ((y / Nf) ** 6)) * 180 / math.pi;
 
-        Bdu = int(math.floor(BB))
-        Bfen = int((BB - Bdu) * 60)
-        Bmiao = ((BB - Bdu) * 60 - Bfen) * 60;
-        BB = Bdu + 0.01 * Bfen + 0.0001 * Bmiao;
-        BB = Bdu*10000 + Bfen*100 + Bmiao;
         l = 1.0 / math.cos(Bf) * (y / Nf - 1.0 / 6.0 * (1 + 2 * tf * tf + hf2) * ((y / Nf) ** 3) + 1.0 / 120.0 * (5 + 28 * tf * tf + 24 * (tf ** 4) + 6 * hf2 + 8 * hf2 * tf * tf) * ((y / Nf) ** 5)) * 180.0 / math.pi;
 
         LL = L0*180/math.pi + l;
-        Ldu = int(math.floor(LL))
-        Lfen = int((LL - Ldu) * 60)
-        Lmiao = ((LL - Ldu) * 60 - Lfen) * 60;
-        LL = Ldu + 0.01 * Lfen + 0.0001 * Lmiao;
-        LL = Ldu*10000 + Lfen*100 + Lmiao;
-        return  StationPoint(LL,BB)
-
-    def gauss_zone(self, x, y, L0, L0new):
-        point_Old = gauss_negative(x, y, L0);
-        point_New = gauss_positive(point_Old.y, point_Old.x, L0new);
-        return point_New
-
-if __name__ == "__main__":
-    ll = 117 * math.pi / 180
-    delta_x = 513804.041 - 513269.1590
-    delta_y = 3788034.879 - 3788170.2160
-    ct = CoordinateTransform("54")
-    with open('C:/Users/miaomiao/workspace/CoordinateTransformProject/bin/input.txt','r') as f:
-        lines = f.readlines()
-    for line in lines:
-        x,y = line.strip().split()
-        sp  = ct.gauss_negative(float(y)+delta_y,float(x)+delta_x,ll)
-        xx,yy = sp.to_DFM()
-        print xx,yy
+        return  [LL,BB]
