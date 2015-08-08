@@ -4,6 +4,7 @@ import socket
 import json
 import udpserver
 from PositionPoint import PositionPoint
+from db import setup_position_db_log, get_db_connection, db_write, insert_log
 
 clients = []
 cars = {}
@@ -13,7 +14,6 @@ def bc_clients():
     msg = json.dumps([{"name": name, "pos": [cars[name][0], cars[name][1]]} for name in cars])
     for client in clients:
         client.write_message(msg)
-
 
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
@@ -43,6 +43,7 @@ app = web.Application([
 
 
 class CollectServer(udpserver.UDPServer):
+    conn = get_db_connection()
     def handle_datagram(self,data, address):
         try:
             pts = data.split(",")
@@ -52,24 +53,30 @@ class CollectServer(udpserver.UDPServer):
                 X = float(pts[2])
                 Y = float(pts[3])
                 res = PositionPoint().set_xy(X,Y).export_amap()
+                insert_log(name,res[0],res[1])
                 cars[name] =  res
             elif version == "V2":
                 name = pts[1]
-                Lng = float(pts[2])
-                Lat = float(pts[3])
-                res = PositionPoint().set_lnglat(Lng,Lat).export_amap()
+                lng = float(pts[2])
+                lat = float(pts[3])
+                res = PositionPoint().set_lnglat(lng,lat).export_amap()
+                insert_log(name,lng,lat)
                 cars[name] = res
         except Exception as e:
             print "error",e,data
 
 
 if __name__ == "__main__":
+    setup_position_db_log()
     io_loop = ioloop.IOLoop.current()
     http_server = httpserver.HTTPServer(app)
     http_server.listen(8886, '0.0.0.0')
 
-    sched = ioloop.PeriodicCallback(bc_clients, 1000) # 1s
-    sched.start()
+    broadcast_task = ioloop.PeriodicCallback(bc_clients, 1000) # 1s
+    broadcast_task.start()
+
+    db_write_task = ioloop.PeriodicCallback(db_write , 3300) # 3.3s
+    db_write_task.start()
 
     collect_server = CollectServer()
     collect_server.bind(8887, '0.0.0.0')
