@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS positionlogs (
         devicename TEXT NOT NULL,
         lng REAL,
         lat REAL,
-        ctime DATETIME DEFAULT CURRENT_TIMESTAMP
+        ctime REAL DEFAULT ((julianday('now') - 2440587.5) * 86400.0)
         );
