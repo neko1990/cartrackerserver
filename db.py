@@ -4,6 +4,7 @@ DB_NAME = "position-log.sqlite3"
 
 conn = sqlite3.connect(DB_NAME)
 conn.row_factory = sqlite3.Row
+conn.text_factory = str
 
 
 def setup_position_db_log():
