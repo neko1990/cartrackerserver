@@ -36,6 +36,7 @@ function initialize(){
 };
 
 function websocketToServer(){
+  // var host = "106.185.49.44";
   var host = "180.123.139.174";
   var port = "8886";
   var uri = "/ws"

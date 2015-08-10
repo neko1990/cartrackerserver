@@ -12,9 +12,10 @@ function initialize() {
 }
 
 function websocketToServer(){
+  // var host = "106.185.49.44";
   var host = "180.123.139.174";
   var port = "8886";
-  var uri = "/ws"
+  var uri = "/ws?map=google"
   ws = new WebSocket("ws://" + host + ":" + port + uri);
   ws.onopen = function(evt) {
     console.log("Connect Successful");
