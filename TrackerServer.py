@@ -72,6 +72,17 @@ class CollectServer(udpserver.UDPServer):
                 pt = PositionPoint().set_lnglat(lng,lat)
                 insert_log(name,lng,lat)
                 cars[name] = pt
+            elif version == "V3":
+                name = pts[1]
+                lng_d = float(pts[2][:3])
+                lng_m = float(pts[2][3:])
+                lng = lng_d + lng_m / 60
+                lat_d = float(pts[3][:2])
+                lat_m = float(pts[3][2:])
+                lat = lat_d + lat_m / 60
+                pt = PositionPoint().set_lnglat(lng,lat)
+                insert_log(name,lng,lat)
+                cars[name] = pt
         except Exception as e:
             print "error",e,data
 
