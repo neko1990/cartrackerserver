@@ -96,7 +96,7 @@ class CollectServerUDP(udpserver.UDPServer):
 
 class CollectConnection:
     tcp_devices = set()
-    def __init__(self,steam,address):
+    def __init__(self,stream,address):
         self.stream = stream
         if self.stream.socket.family not in (socket.AF_INET, socket.AF_INET6):
             # Unix (or other) socket; fake the remote address
@@ -110,11 +110,11 @@ class CollectConnection:
         self.read_message()
 
     def _on_disconnect(self):
-        logging.info('%r leaves',address)
+        logging.info('%r leaves',self.address)
         CollectConnection.tcp_devices.remove(self)
 
     def read_message(self):
-        self.stream.read_until('\n',record_position)
+        self.stream.read_until('\n',self.record_position)
 
     def record_position(self,data):
         try:
@@ -128,7 +128,7 @@ class CollectConnection:
 
 
 class CollectServerTCP(tcpserver.TCPServer):
-    def handle_stream(self,steam,address):
+    def handle_stream(self,stream,address):
         CollectConnection(stream,address)
 
 
