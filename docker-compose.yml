@@ -1,0 +1,9 @@
+trackerserver:
+  build: .
+  command: python TrackerServer.py
+  ports:
+   - "8887:8887"
+   - "8886:8886"
+   - "8897:8897"
+  volumes:
+   - .:/code
