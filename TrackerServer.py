@@ -57,7 +57,7 @@ app = web.Application([
 
 
 def decode_protocol(data):
-    pts = data.split(",")
+    pts = data[:-1].strip().split(",")
     version = pts[0]
     if version == "V1":
         name = pts[1]
@@ -114,7 +114,7 @@ class CollectConnection:
         CollectConnection.tcp_devices.remove(self)
 
     def read_message(self):
-        self.stream.read_until('\n',self.record_position)
+        self.stream.read_until('*',self.record_position)
 
     def record_position(self,data):
         try:
