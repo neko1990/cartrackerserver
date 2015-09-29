@@ -1,8 +1,9 @@
 import sqlite3
+import settings
+import datetime
 
-DB_NAME = "position-log.sqlite3"
+conn = sqlite3.connect(settings.DB_NAME)
 
-conn = sqlite3.connect(DB_NAME)
 conn.row_factory = sqlite3.Row
 conn.text_factory = str
 
@@ -25,3 +26,16 @@ def db_write():
 
 def insert_log(name,lng,lat):
     conn.execute("""INSERT INTO positionlogs (devicename,lng,lat) VALUES (?,?,?)""",(name,lng,lat))
+
+def get_cars():
+    cars = {}
+    now = datetime.datetime.utcnow()
+    results = conn.execute("""SELECT devicename,lng,lat,ctime \
+    FROM positionlogs GROUP BY devicename ORDER BY logid DESC LIMIT 1;""").fetchall()
+    for car in results:
+        if now - datetime.datetime.fromtimestamp(car[3]) < settings.TIMEOUT_INTERVAL:
+            cars[car[0]] = (car[1],car[2])
+    return cars
+
+if __name__ == "__main__":
+    get_cars()
