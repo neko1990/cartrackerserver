@@ -3,6 +3,14 @@
 
 import socket
 import time
+import settings
+
+UDP_IP = settings.EXTERNAL_IP
+UDP_PORT = 8887
+
+sock = socket.socket(socket.AF_INET,
+                     socket.SOCK_DGRAM)
+
 
 poss = [
     [117.14112364303995, 34.210311754345234],
@@ -829,13 +837,6 @@ poss = [
     [117.15060066165954, 34.21747963992061],
     [117.15060066165954, 34.21747963992061],
 ]
-
-#UDP_IP = "180.123.139.174"
-UDP_IP = "127.0.0.1"
-UDP_PORT = 8887
-
-sock = socket.socket(socket.AF_INET,
-                     socket.SOCK_DGRAM)
 
 if __name__ == "__main__":
     for pos in poss:

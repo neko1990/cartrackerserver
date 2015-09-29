@@ -1,11 +1,10 @@
 import socket
 import time
 import math
-from CoordinateTransform import CoordinateTransform
 
-#UDP_IP = "106.185.49.44"
-#UDP_IP = "180.123.137.237"
-UDP_IP = "127.0.0.1"
+import settings
+
+UDP_IP = settings.EXTERNAL_IP
 UDP_PORT = 8887
 
 sock = socket.socket(socket.AF_INET,
@@ -21,7 +20,7 @@ def get_poss():
 if __name__ == "__main__":
     for pos in get_poss():
         time.sleep(0.1)
-        # msg = json.dumps({"name":"XHC#1","pos":[pos[0],pos[1]]})
+        # V1,XHC#1,512470.64375693223,3787205.153150127,ORI,V,ACC,TS
         msg = ','.join(['V1', 'XHC#1', str(pos[0]), str(pos[1]), "ORI", "V", "ACC", "TS"])
         print msg
         sock.sendto(msg, (UDP_IP, UDP_PORT))

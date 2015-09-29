@@ -3,11 +3,11 @@
 import socket
 import time
 import math
-from CoordinateTransform import CoordinateTransform
 
-#UDP_IP = "106.185.49.44"
-#UDP_IP = "180.123.139.174"
-UDP_IP = "127.0.0.1"
+from CoordinateTransform import CoordinateTransform
+import settings
+
+UDP_IP = settings.EXTERNAL_IP
 UDP_PORT = 8887
 
 sock = socket.socket(socket.AF_INET,

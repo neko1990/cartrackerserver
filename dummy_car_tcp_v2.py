@@ -3,12 +3,11 @@
 import socket
 import time
 import math
-from CoordinateTransform import CoordinateTransform
 
-#SERVER_IP = "106.185.49.44"
-#SERVER_IP = "180.123.139.174"
-SERVER_IP = "127.0.0.1"
-UDP_PORT = 8887
+from CoordinateTransform import CoordinateTransform
+import settings
+
+SERVER_IP = settings.EXTERNAL_IP
 TCP_PORT = 8897
 
 
@@ -30,7 +29,7 @@ if __name__ == "__main__":
         # if c > 50:
         #     break
         time.sleep(0.01)
-        msg = ','.join(['V2', 'TCP_V2', str(pos[0]), str(pos[1]), "ORI", "V", "ACC", "TS"])+'\n'
+        msg = ','.join(['V2', 'TCP_V2', str(pos[0]), str(pos[1]), "ORI", "V", "ACC", "TS"])+'*'
         try:
             sock.sendall(msg)
             data = sock.recv(10)
